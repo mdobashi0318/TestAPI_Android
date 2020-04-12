@@ -3,6 +3,7 @@ package com.example.testapi
 import android.content.Intent
 import android.os.Bundle
 import android.widget.ArrayAdapter
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.github.kittinunf.fuel.httpGet
@@ -15,6 +16,8 @@ import kotlinx.android.synthetic.main.activity_main.*
 class MainActivity : AppCompatActivity() {
 
     private var swipeRefreshLayout: SwipeRefreshLayout? = null
+
+    private lateinit var userModel:List<UsersModel>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,12 +53,16 @@ class MainActivity : AppCompatActivity() {
                             is Result.Failure -> {
                                 val error = result.getException()
                                 println("error: $error")
+
+                                listView.adapter = null
+
+                                Toast.makeText(applicationContext,"リストの取得に失敗しました", Toast.LENGTH_LONG).show()
                             }
                             is Result.Success -> {
                                 val data = result.get()
 
                                 val listType = object : TypeToken<List<UsersModel>>() {}.type
-                                val userModel = Gson().fromJson<List<UsersModel>>(data, listType)
+                                userModel = Gson().fromJson<List<UsersModel>>(data, listType)
                                 println("userModel: $userModel")
 
                                 var dataArray = mutableListOf<String>()

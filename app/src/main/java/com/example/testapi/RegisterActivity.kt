@@ -2,6 +2,7 @@ package com.example.testapi
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.widget.Toast
 import com.github.kittinunf.fuel.Fuel
 import com.github.kittinunf.fuel.core.extensions.jsonBody
 import com.github.kittinunf.result.Result
@@ -30,7 +31,6 @@ class RegisterActivity : AppCompatActivity() {
             }
 
             post()
-            showAlert("登録しました", true)
         }
     }
 
@@ -45,11 +45,14 @@ class RegisterActivity : AppCompatActivity() {
                     is Result.Failure -> {
                         val error = result.getException()
                         println("error: $error")
+                        Toast.makeText(applicationContext,"登録に失敗しました", Toast.LENGTH_LONG).show()
                     }
                     is Result.Success -> {
                         val data = result.get()
 
                         println("result: $data")
+                        Toast.makeText(applicationContext,"登録しました", Toast.LENGTH_LONG).show()
+                        finish()
                     }
                 }
 
