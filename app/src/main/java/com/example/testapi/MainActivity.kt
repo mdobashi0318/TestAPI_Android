@@ -53,6 +53,7 @@ class MainActivity : AppCompatActivity() {
 
 
 
+    /// Userの全件検索
     private fun fetchAPI() {
 
                 val httpAsync = "http://10.0.2.2/api/v1/users/"

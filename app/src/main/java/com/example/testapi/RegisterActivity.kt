@@ -49,7 +49,7 @@ class RegisterActivity : AppCompatActivity() {
     }
 
 
-
+    /// Userの追加
     private fun post() {
         Fuel.post("http://10.0.2.2/api/v1/users/")
             .jsonBody("{\"name\":\"${nameTextField.text}\", \"text\":\"${textField.text}\"}")
