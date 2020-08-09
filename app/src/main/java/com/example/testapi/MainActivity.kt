@@ -2,6 +2,7 @@ package com.example.testapi
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -32,6 +33,14 @@ class MainActivity : AppCompatActivity() {
         swipeRefreshLayout?.setOnRefreshListener {
             fetchAPI()
             swipelayout.isRefreshing = false
+        }
+
+        listView.setOnItemClickListener { _, _, _, id ->
+            val intent: Intent = Intent(applicationContext, RegisterActivity::class.java)
+            intent.putExtra("userid", userModel[id.toInt()].id)
+            intent.putExtra("name", userModel[id.toInt()].name)
+            intent.putExtra("text", userModel[id.toInt()].text)
+            startActivity(intent)
         }
 
     }
