@@ -27,6 +27,7 @@ class MainActivity : AppCompatActivity() {
         swipeRefreshLayout = swipelayout
         floatingActionButton.setOnClickListener {
             val intent = Intent(applicationContext, RegisterActivity::class.java)
+            intent.putExtra("userid", "")
             startActivity(intent)
         }
 

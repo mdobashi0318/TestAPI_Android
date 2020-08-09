@@ -21,13 +21,13 @@ class RegisterActivity : AppCompatActivity() {
         setContentView(R.layout.activity_register)
 
 
-        userid = intent.getStringExtra("userid")
-
-        if(userid != "") {
+        if (intent.getStringExtra("userid") != "") {
+            userid = intent.getStringExtra("userid")
             nameTextField.setText(intent.getStringExtra("name").toString())
             textField.setText(intent.getStringExtra("text").toString())
-        }
 
+
+        }
         button.setOnClickListener {
 
 
@@ -40,10 +40,10 @@ class RegisterActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            if(userid == "") {
-                post()
-            } else {
+            if (intent.getStringExtra("userid") != "") {
                 updateText()
+            } else {
+                post()
             }
         }
     }
