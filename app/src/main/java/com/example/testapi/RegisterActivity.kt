@@ -15,7 +15,8 @@ class RegisterActivity : AppCompatActivity() {
 
     private var userid: String? = null
 
-    
+    private var usersViewModel: UsersViewModel = UsersViewModel()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_register)
@@ -41,7 +42,14 @@ class RegisterActivity : AppCompatActivity() {
             }
 
             if (intent.getStringExtra("userid") != "") {
-                updateText()
+                usersViewModel.updateText(userid.toString(), nameTextField.text.toString(), textField.text.toString()) { result ->
+                    if(result) {
+                        Toast.makeText(applicationContext, "更新しました", Toast.LENGTH_LONG).show()
+                        finish()
+                    } else {
+                        Toast.makeText(applicationContext, "更新に失敗しました", Toast.LENGTH_LONG).show()
+                    }
+                }
             } else {
                 post()
             }
@@ -73,30 +81,6 @@ class RegisterActivity : AppCompatActivity() {
             }
     }
 
-
-    /// Userの更新
-    private fun updateText() {
-        Fuel.put("http://10.0.2.2/api/v1/users/${userid}")
-            .jsonBody("{\"name\":\"${nameTextField.text}\", \"text\":\"${textField.text}\"}")
-            .response{ result ->
-
-                when (result) {
-                    is Result.Failure -> {
-                        val error = result.getException()
-                        println("error: $error")
-                        Toast.makeText(applicationContext,"更新に失敗しました", Toast.LENGTH_LONG).show()
-                    }
-                    is Result.Success -> {
-                        val data = result.get()
-
-                        println("result: $data")
-                        Toast.makeText(applicationContext,"更新しました", Toast.LENGTH_LONG).show()
-                        finish()
-                    }
-                }
-
-            }
-    }
 
 
     /// yesButtonを押した時に画面を閉じるアラート
