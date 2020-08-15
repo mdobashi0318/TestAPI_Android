@@ -31,7 +31,6 @@ class RegisterActivity : AppCompatActivity() {
         }
         button.setOnClickListener {
 
-
             if (nameTextField.text.isEmpty()) {
                 showAlert("名前が入力されていません", false)
                 return@setOnClickListener
@@ -42,52 +41,39 @@ class RegisterActivity : AppCompatActivity() {
             }
 
             if (intent.getStringExtra("userid") != "") {
-                usersViewModel.updateText(userid.toString(), nameTextField.text.toString(), textField.text.toString()) { result ->
-                    if(result) {
+                usersViewModel.updateText(userid.toString(), nameTextField.text.toString(), textField.text.toString()
+                ) { result ->
+                    if (result) {
                         Toast.makeText(applicationContext, "更新しました", Toast.LENGTH_LONG).show()
                         finish()
+
                     } else {
                         Toast.makeText(applicationContext, "更新に失敗しました", Toast.LENGTH_LONG).show()
+
                     }
                 }
+
             } else {
-                post()
+                usersViewModel.post(nameTextField.text.toString(), textField.text.toString()) { result ->
+                    if (result) {
+                        Toast.makeText(applicationContext,"登録しました", Toast.LENGTH_LONG).show()
+                        finish()
+
+                    } else {
+                        Toast.makeText(applicationContext,"登録に失敗しました", Toast.LENGTH_LONG).show()
+
+                    }
+                }
+
             }
         }
     }
 
-
-    /// Userの追加
-    private fun post() {
-        Fuel.post("http://10.0.2.2/api/v1/users/")
-            .jsonBody("{\"name\":\"${nameTextField.text}\", \"text\":\"${textField.text}\"}")
-            .response{ result ->
-
-                when (result) {
-                    is Result.Failure -> {
-                        val error = result.getException()
-                        println("error: $error")
-                        Toast.makeText(applicationContext,"登録に失敗しました", Toast.LENGTH_LONG).show()
-                    }
-                    is Result.Success -> {
-                        val data = result.get()
-
-                        println("result: $data")
-                        Toast.makeText(applicationContext,"登録しました", Toast.LENGTH_LONG).show()
-                        finish()
-                    }
-                }
-
-            }
-    }
-
-
-
     /// yesButtonを押した時に画面を閉じるアラート
     private fun showAlert(message: String, isFinish: Boolean) {
         alert(message) {
-                yesButton {
-                    if (isFinish) {
+            yesButton {
+                if (isFinish) {
                     finish()
                 }
             }

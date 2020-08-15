@@ -6,10 +6,6 @@ import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import com.github.kittinunf.fuel.httpGet
-import com.github.kittinunf.result.Result
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import kotlinx.android.synthetic.main.activity_main.*
 
 
@@ -17,7 +13,7 @@ class MainActivity : AppCompatActivity() {
 
     private var swipeRefreshLayout: SwipeRefreshLayout? = null
 
-    private lateinit var userModel:List<UsersModel>
+    private var userViewModel = UsersViewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,15 +27,15 @@ class MainActivity : AppCompatActivity() {
         }
 
         swipeRefreshLayout?.setOnRefreshListener {
-            fetchAPI()
+            fetchModel()
             swipelayout.isRefreshing = false
         }
 
         listView.setOnItemClickListener { _, _, _, id ->
             val intent: Intent = Intent(applicationContext, RegisterActivity::class.java)
-            intent.putExtra("userid", userModel[id.toInt()].id)
-            intent.putExtra("name", userModel[id.toInt()].name)
-            intent.putExtra("text", userModel[id.toInt()].text)
+            intent.putExtra("userid", userViewModel.model[id.toInt()].id)
+            intent.putExtra("name", userViewModel.model[id.toInt()].name)
+            intent.putExtra("text", userViewModel.model[id.toInt()].text)
             startActivity(intent)
         }
 
@@ -48,46 +44,27 @@ class MainActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
 
-        fetchAPI()
+        fetchModel()
     }
 
 
 
-    /// Userの全件検索
-    private fun fetchAPI() {
+    /// Userを全検索
+    private fun fetchModel() {
+        userViewModel.fetchAPI { result ->
+            if(result != null) {
+                val adapter = ArrayAdapter<String>(applicationContext, android.R.layout.simple_list_item_1, result)
 
-                val httpAsync = "http://10.0.2.2/api/v1/users/"
-                    .httpGet()
-                    .responseString { r, s, result ->
-                        when (result) {
-                            is Result.Failure -> {
-                                val error = result.getException()
-                                println("error: $error")
+                listView.adapter = adapter
 
-                                listView.adapter = null
-
-                                Toast.makeText(applicationContext,"リストの取得に失敗しました", Toast.LENGTH_LONG).show()
-                            }
-                            is Result.Success -> {
-                                val data = result.get()
-
-                                val listType = object : TypeToken<List<UsersModel>>() {}.type
-                                userModel = Gson().fromJson<List<UsersModel>>(data, listType)
-                                println("userModel: $userModel")
-
-                                var dataArray = mutableListOf<String>()
-
-                                for (user in userModel) {
-                                    dataArray.add(user.name)
-                                }
-
-                                val adapter = ArrayAdapter<String>(applicationContext, android.R.layout.simple_list_item_1, dataArray)
-                                listView.adapter = adapter
-
-                            }
-                        }
-                    }
-
-                httpAsync.join()
+            } else {
+                listView.adapter = null
+                Toast.makeText(applicationContext,"リストの取得に失敗しました", Toast.LENGTH_LONG).show()
             }
+        }
+    }
+
+
+
+
 }
